@@ -11,6 +11,10 @@ const contentType = {
   ".css": "text/css",
   ".js": "application/javascript",
   ".json": "application/json",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
 };
 
 const filePath = (fileName) =>
@@ -20,19 +24,10 @@ const server = createServer(async (req, res) => {
   let url = req.url;
   let status = 200;
   let message;
-  if (url === "/") {
-    try {
-      status = 200;
-      const data = await fs.readFile(filePath("public/index.html"), {
-        encoding: "utf-8",
-      });
-      message = data;
-    } catch (error) {
-      status = 404;
-      message = "<h1>File Not Found!</h1>";
-    }
-    res.setHeader("Content-Type", "text/html");
-  } else if (url === "/bookmarks") {
+
+  const fileType = url === "/" ? ".html" : extname(url);
+
+  if (url === "/bookmarks") {
     try {
       status = 200;
       const data = await fs.readFile(filePath("data/bookmarks.json"), {
@@ -48,11 +43,18 @@ const server = createServer(async (req, res) => {
   } else {
     try {
       status = 200;
-      const data = await fs.readFile(filePath(join("public", url)), {
+      let pathName = join("public", url);
+      if (url === "/") {
+        pathName = "public/index.html";
+      }
+      const data = await fs.readFile(filePath(pathName), {
         encoding: "utf-8",
       });
-      const fileType = extname(url);
-      res.setHeader("Content-Type", contentType[fileType]);
+
+      res.setHeader(
+        "Content-Type",
+        contentType[fileType] || "application/octet-stream",
+      );
       message = data;
     } catch (err) {
       status = 404;
