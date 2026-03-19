@@ -1,0 +1,13 @@
+:root {
+  --bg: #c9eaf5; /* lightblue */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg);
+}

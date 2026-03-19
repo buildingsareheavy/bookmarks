@@ -8,5 +8,63 @@
   </head>
   <body>
     <h1>Bookmarks</h1>
+    <button id="add-new" command="show-modal" commandfor="add-new-dialog">
+      Add New
+    </button>
+    <dialog id="add-new-dialog">
+      <h2 id="dialog-title">Add New Bookmark</h2>
+      <form id="add-new-form">
+        <label for="add-title">Title</label>
+        <input type="text" id="add-title" name="addTitle" required />
+        <label for="add-url">URL</label>
+        <input
+          type="url"
+          id="add-url"
+          name="addUrl"
+          pattern="https://.*/"
+          required
+        />
+        <!-- combobox for tags later -->
+        <button id="add-new-submit">Submit</button>
+      </form>
+      <button commandfor="add-new-dialog" command="close">Close</button>
+    </dialog>
+    <div class="filter-container">
+      Filter:
+      <select name="tags" id="tag-filter">
+        <option value="all">all</option>
+        <option value="art">art</option>
+        <option value="coding">coding</option>
+        <option value="news">news</option>
+        <option value="reference">reference</option>
+      </select>
+    </div>
+    <h2>List of Bookmarks</h2>
+    <main>
+      <article>
+        <h3><a href="https://www.google.com">Google</a></h3>
+        <div aria-label="meta-info">
+          <p>tags: <span>reference</span></p>
+          <p>created: <span>02 Feb 2026</span></p>
+        </div>
+        <button class="modify" aria-label="bookmark options">...</button>
+      </article>
+      <article>
+        <h3><a href="https://www.github.com">Github</a></h3>
+        <div aria-label="meta-info">
+          <p>tags: <span>coding</span></p>
+          <p>created: <span>15 Feb 2026</span></p>
+        </div>
+        <button class="modify" aria-label="bookmark options">...</button>
+      </article>
+      <article>
+        <h3><a href="https://www.cnn.com">CNN</a></h3>
+        <div aria-label="meta-info">
+          <p>tags: <span>news</span></p>
+          <p>created: <span>28 Feb 2026</span></p>
+        </div>
+        <button class="modify" aria-label="bookmark options">...</button>
+      </article>
+    </main>
   </body>
 </html>
