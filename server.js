@@ -1,32 +1,67 @@
 import { createServer } from "node:http";
 import fs from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { extname, dirname, join } from "node:path";
+
 const hostname = "localhost";
 const port = 3000;
+
+const contentType = {
+  ".html": "text/html",
+  ".css": "text/css",
+  ".js": "application/javascript",
+  ".json": "application/json",
+};
+
+const filePath = (fileName) =>
+  join(dirname(fileURLToPath(import.meta.url)), fileName);
 
 const server = createServer(async (req, res) => {
   let url = req.url;
   let status = 200;
   let message;
   if (url === "/") {
-    message = [{ text: "hello from node!" }];
+    try {
+      status = 200;
+      const data = await fs.readFile(filePath("public/index.html"), {
+        encoding: "utf-8",
+      });
+      message = data;
+    } catch (error) {
+      status = 404;
+      message = "<h1>File Not Found!</h1>";
+    }
+    res.setHeader("Content-Type", "text/html");
   } else if (url === "/bookmarks") {
     try {
-      const data = await fs.readFile("data/bookmarks.json", {
+      status = 200;
+      const data = await fs.readFile(filePath("data/bookmarks.json"), {
         encoding: "utf8",
       });
-      const bookmarks = JSON.parse(data);
-      message = bookmarks;
+      message = JSON.parse(data);
     } catch (err) {
-      console.error(err);
+      status = 400;
       message = [{ error: "Failed to read bookmarks" }];
     }
+    message = JSON.stringify(message);
+    res.setHeader("Content-Type", "application/json");
   } else {
-    message = [{ error: "Not found" }];
-    status = 404;
+    try {
+      status = 200;
+      const data = await fs.readFile(filePath(join("public", url)), {
+        encoding: "utf-8",
+      });
+      const fileType = extname(url);
+      res.setHeader("Content-Type", contentType[fileType]);
+      message = data;
+    } catch (err) {
+      status = 404;
+      message = [{ error: "Not found" }];
+      message = JSON.stringify(message);
+    }
   }
   res.statusCode = status;
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(message));
+  res.end(message);
 });
 
 server.listen(port, hostname, () => {
