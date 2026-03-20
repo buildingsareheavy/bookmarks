@@ -22,7 +22,7 @@ const filePath = (fileName) =>
 
 const server = createServer(async (req, res) => {
   let url = req.url;
-  let status = 200;
+  let status;
   let message;
 
   const fileType = url === "/" ? ".html" : extname(url);
@@ -34,7 +34,7 @@ const server = createServer(async (req, res) => {
         encoding: "utf8",
       });
       message = JSON.parse(data);
-    } catch (err) {
+    } catch {
       status = 400;
       message = [{ error: "Failed to read bookmarks" }];
     }
@@ -56,7 +56,7 @@ const server = createServer(async (req, res) => {
         contentType[fileType] || "application/octet-stream",
       );
       message = data;
-    } catch (err) {
+    } catch {
       status = 404;
       message = [{ error: "Not found" }];
       message = JSON.stringify(message);
