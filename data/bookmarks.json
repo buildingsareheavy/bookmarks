@@ -1,5 +1,23 @@
 [
-  { "id": 1, "title": "Google", "url": "https://www.google.com" },
-  { "id": 2, "title": "GitHub", "url": "https://www.github.com" },
-  { "id": 3, "title": "Stack Overflow", "url": "https://stackoverflow.com" }
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "title": "Google",
+    "url": "https://www.google.com",
+    "tags": ["reference"],
+    "createdAt": "2026-01-15T09:23:00Z"
+  },
+  {
+    "id": "9b2e6a4d-1c3f-4d8e-b5a7-2f0e9c8d1234",
+    "title": "GitHub",
+    "url": "https://www.github.com",
+    "tags": ["coding", "math"],
+    "createdAt": "2026-02-08T14:45:00Z"
+  },
+  {
+    "id": "3d7f2b1e-8a4c-4e9f-c6b8-5g1h3i2j4k5l",
+    "title": "CNN",
+    "url": "https://cnn.com",
+    "tags": ["news"],
+    "createdAt": "2026-03-02T11:10:00Z"
+  }
 ]
