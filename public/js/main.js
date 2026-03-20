@@ -35,3 +35,23 @@ async function getBookmarks() {
 }
 
 getBookmarks();
+
+const newBookmarkForm = document.getElementById("add-new-form");
+
+function submitNewBookmark(event) {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+  const dataObject = Object.fromEntries(formData.entries());
+
+  fetch("/bookmarks", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(dataObject),
+  }).then(console.log(dataObject));
+}
+
+newBookmarkForm.addEventListener("submit", submitNewBookmark);
