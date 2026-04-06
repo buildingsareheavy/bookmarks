@@ -28,17 +28,38 @@ const server = createServer(async (req, res) => {
   const fileType = url === "/" ? ".html" : extname(url);
 
   if (url === "/bookmarks") {
-    try {
-      status = 200;
-      const data = await fs.readFile(filePath("data/bookmarks.json"), {
-        encoding: "utf8",
-      });
-      message = JSON.parse(data);
-    } catch {
-      status = 400;
-      message = [{ error: "Failed to read bookmarks" }];
+    if (req.method === "GET") {
+      try {
+        status = 200;
+        const data = await fs.readFile(filePath("data/bookmarks.json"), {
+          encoding: "utf8",
+        });
+        message = JSON.parse(data);
+      } catch {
+        status = 400;
+        message = [{ error: "Failed to read bookmarks" }];
+      }
+      message = JSON.stringify(message);
+    } else if (req.method === "POST") {
+      let body = "";
+      for await (const chunk of req) {
+        body += chunk.toString();
+      }
+
+      try {
+        let message = JSON.parse(body);
+        console.log("Recieved POST data", message);
+        status = 200;
+        message = JSON.stringify({
+          message: "Data recieved!",
+          received: message,
+        });
+      } catch {
+        status = 400;
+        message = [{ error: "Not found" }];
+        message = JSON.stringify(message);
+      }
     }
-    message = JSON.stringify(message);
     res.setHeader("Content-Type", "application/json");
   } else {
     try {

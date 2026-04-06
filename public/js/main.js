@@ -1,3 +1,5 @@
+import { postBookmark } from "./api.js";
+
 const main = document.querySelector("main");
 
 async function getBookmarks() {
@@ -8,7 +10,6 @@ async function getBookmarks() {
       throw new Error("Response status: " + response.status);
     }
     const result = await response.json();
-    console.log(result);
     main.innerHTML = result
       .map(
         (bookmark) => `
@@ -45,13 +46,7 @@ function submitNewBookmark(event) {
   const formData = new FormData(form);
   const dataObject = Object.fromEntries(formData.entries());
 
-  fetch("/bookmarks", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(dataObject),
-  }).then(console.log(dataObject));
+  postBookmark(dataObject);
 }
 
 newBookmarkForm.addEventListener("submit", submitNewBookmark);
