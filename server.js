@@ -20,6 +20,20 @@ const contentType = {
 const filePath = (fileName) =>
   join(dirname(fileURLToPath(import.meta.url)), fileName);
 
+const pushToJSONFile = async function (destination, newBookmark) {
+  try {
+    let fileContents = await fs.readFile(destination, "utf8");
+
+    let data = JSON.parse(fileContents);
+
+    data.push(newBookmark);
+    await fs.writeFile(destination, JSON.stringify(data, null, 2), "utf8");
+    console.log("Object added successfully");
+  } catch (error) {
+    console.error("Error", error);
+  }
+};
+
 const server = createServer(async (req, res) => {
   let url = req.url;
   let status;
@@ -48,7 +62,13 @@ const server = createServer(async (req, res) => {
 
       try {
         let message = JSON.parse(body);
+        let date = new Date();
+        message["id"] = crypto.randomUUID();
+        message["createdAt"] = date.toISOString();
         console.log("Recieved POST data", message);
+
+        await pushToJSONFile(filePath("data/bookmarks.json"), message);
+
         status = 200;
         message = JSON.stringify({
           message: "Data recieved!",
