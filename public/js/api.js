@@ -2,6 +2,7 @@ export { postBookmark };
 
 // all fetch calls live here
 async function postBookmark(data) {
+  let success;
   try {
     const response = await fetch("/bookmarks", {
       method: "POST",
@@ -11,9 +12,16 @@ async function postBookmark(data) {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) throw new Error(`HTTP error! status ${response.status}`);
-    console.log(data);
+    if (!response.ok) {
+      success = false;
+      throw new Error(`HTTP error! status ${response.status}`);
+    } else {
+      success = true;
+    }
   } catch (error) {
+    success = false;
     console.error("Fetch error:", error);
   }
+
+  return success;
 }

@@ -1,8 +1,8 @@
 import { postBookmark } from "./api.js";
 
-const main = document.querySelector("main");
-
 const dialog = document.getElementById("add-new-dialog");
+const main = document.querySelector("main");
+const popover = document.getElementById("submit-popover");
 
 async function getBookmarks() {
   const bookmarksUrl = "/bookmarks";
@@ -18,7 +18,7 @@ async function getBookmarks() {
         <article>
     <h3><a href="${bookmark.url}">${bookmark.title}</a></h3>
     <div aria-label="meta information" class="meta-info">
-          <p aria-label="tags">${bookmarksUrl.tags && bookmark.tags.map((tag) => `<span> ${tag} </span>`).join("")} </p>
+          <p aria-label="tags">${bookmark.tags && bookmark.tags.map((tag) => `<span> ${tag} </span>`).join("")} </p>
           <p aria-label="created date">${new Date(
             bookmark.createdAt,
           ).toLocaleString("en-GB", {
@@ -33,7 +33,7 @@ async function getBookmarks() {
       )
       .join("");
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
   }
 }
 
@@ -48,9 +48,19 @@ async function submitNewBookmark(event) {
   const formData = new FormData(form);
   const dataObject = Object.fromEntries(formData.entries());
 
-  await postBookmark(dataObject);
-  getBookmarks();
+  const result = await postBookmark(dataObject);
+  popover.setAttribute("data-success", result);
+
+  if (result) {
+    getBookmarks();
+
+    popover.textContent = "new bookmark added!";
+  } else {
+    popover.textContent = "something went wrong!";
+  }
   dialog.close();
+  popover.showPopover();
+  form.reset();
 }
 
 newBookmarkForm.addEventListener("submit", submitNewBookmark);
