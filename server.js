@@ -82,6 +82,28 @@ const server = createServer(async (req, res) => {
       }
     }
     res.setHeader("Content-Type", "application/json");
+  } else if (url.startsWith("/bookmarks/")) {
+    let idUrl = url.split("/").pop();
+    if (req.method === "GET") {
+      try {
+        const data = await fs.readFile(filePath("data/bookmarks.json"), {
+          encoding: "utf8",
+        });
+        message = JSON.parse(data);
+        const isValidId = message.find(({ id }) => id === idUrl);
+        if (isValidId) {
+          status = 200;
+          message = isValidId;
+        } else {
+          status = 404;
+          message = [{ error: "Bookmark not found" }];
+        }
+      } catch {
+        status = 400;
+        message = [{ error: "Failed to read bookmarks" }];
+      }
+      message = JSON.stringify(message);
+    }
   } else {
     try {
       status = 200;

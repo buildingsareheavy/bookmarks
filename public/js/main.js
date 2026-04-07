@@ -2,7 +2,21 @@ import { postBookmark } from "./api.js";
 
 const dialog = document.getElementById("add-new-dialog");
 const main = document.querySelector("main");
+const newBookmarkForm = document.getElementById("add-new-form");
 const popover = document.getElementById("submit-popover");
+
+main.addEventListener("click", (event) => {
+  let clickTarget = event.target;
+
+  const isClickMatch = clickTarget.matches("button.modify");
+
+  if (isClickMatch) {
+    const clickParent = clickTarget.closest("article");
+    const clickId = clickParent.getAttribute("data-id");
+
+    console.log(fetch(`/bookmarks/${clickId}`));
+  }
+});
 
 async function getBookmarks() {
   const bookmarksUrl = "/bookmarks";
@@ -15,7 +29,7 @@ async function getBookmarks() {
     main.innerHTML = result
       .map(
         (bookmark) => `
-        <article>
+        <article data-id="${bookmark.id}">
     <h3><a href="${bookmark.url}">${bookmark.title}</a></h3>
     <div aria-label="meta information" class="meta-info">
           <p aria-label="tags">${bookmark.tags && bookmark.tags.map((tag) => `<span> ${tag} </span>`).join("")} </p>
@@ -37,10 +51,6 @@ async function getBookmarks() {
   }
 }
 
-getBookmarks();
-
-const newBookmarkForm = document.getElementById("add-new-form");
-
 async function submitNewBookmark(event) {
   event.preventDefault();
 
@@ -53,7 +63,6 @@ async function submitNewBookmark(event) {
 
   if (result) {
     getBookmarks();
-
     popover.textContent = "new bookmark added!";
   } else {
     popover.textContent = "something went wrong!";
@@ -62,5 +71,7 @@ async function submitNewBookmark(event) {
   popover.showPopover();
   form.reset();
 }
+
+getBookmarks();
 
 newBookmarkForm.addEventListener("submit", submitNewBookmark);
