@@ -2,6 +2,8 @@ import { postBookmark } from "./api.js";
 
 const main = document.querySelector("main");
 
+const dialog = document.getElementById("add-new-dialog");
+
 async function getBookmarks() {
   const bookmarksUrl = "/bookmarks";
   try {
@@ -16,7 +18,7 @@ async function getBookmarks() {
         <article>
     <h3><a href="${bookmark.url}">${bookmark.title}</a></h3>
     <div aria-label="meta information" class="meta-info">
-          <p aria-label="tags">${bookmark.tags.map((tag) => `<span> ${tag} </span>`).join("")} </p>
+          <p aria-label="tags">${bookmarksUrl.tags && bookmark.tags.map((tag) => `<span> ${tag} </span>`).join("")} </p>
           <p aria-label="created date">${new Date(
             bookmark.createdAt,
           ).toLocaleString("en-GB", {
@@ -39,14 +41,16 @@ getBookmarks();
 
 const newBookmarkForm = document.getElementById("add-new-form");
 
-function submitNewBookmark(event) {
+async function submitNewBookmark(event) {
   event.preventDefault();
 
   const form = event.currentTarget;
   const formData = new FormData(form);
   const dataObject = Object.fromEntries(formData.entries());
 
-  postBookmark(dataObject);
+  await postBookmark(dataObject);
+  getBookmarks();
+  dialog.close();
 }
 
 newBookmarkForm.addEventListener("submit", submitNewBookmark);

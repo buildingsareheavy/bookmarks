@@ -65,6 +65,7 @@ const server = createServer(async (req, res) => {
         let date = new Date();
         message["id"] = crypto.randomUUID();
         message["createdAt"] = date.toISOString();
+        message["tags"] = [];
         console.log("Recieved POST data", message);
 
         await pushToJSONFile(filePath("data/bookmarks.json"), message);
