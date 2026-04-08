@@ -1,10 +1,12 @@
-import { postBookmark } from "./api.js";
+import { postBookmark, deleteBookmark } from "./api.js";
 
 const dialog = document.getElementById("add-new-dialog");
+const editDialog = document.getElementById("edit-dialog");
 const editBookmarkTitle = document.getElementById("edit-title");
 const editBookmarkUrl = document.getElementById("edit-url");
 const main = document.querySelector("main");
 const newBookmarkForm = document.getElementById("add-new-form");
+const deleteBookmarkButton = document.getElementById("dialog-delete");
 const popover = document.getElementById("submit-popover");
 
 async function fetchBookmark(id) {
@@ -71,12 +73,14 @@ getBookmarks();
 
 newBookmarkForm.addEventListener("submit", submitNewBookmark);
 
+let clickId = null;
+
 main.addEventListener("click", async (event) => {
   let clickTarget = event.target;
   const isClickMatch = clickTarget.matches("button.modify");
   if (isClickMatch) {
     const clickParent = clickTarget.closest("article");
-    const clickId = clickParent.getAttribute("data-id");
+    clickId = clickParent.getAttribute("data-id");
 
     const data = await fetchBookmark(clickId);
 
@@ -84,3 +88,15 @@ main.addEventListener("click", async (event) => {
     editBookmarkUrl.value = data.url;
   }
 });
+
+async function isDeleted() {
+  const result = await deleteBookmark(clickId);
+  if (result) {
+    getBookmarks();
+    editDialog.close();
+  } else {
+    console.error("Error: ", result);
+  }
+}
+
+deleteBookmarkButton.addEventListener("click", isDeleted);

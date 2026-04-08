@@ -36,6 +36,7 @@ const pushToJSONFile = async function (destination, newBookmark) {
 
 const server = createServer(async (req, res) => {
   let url = req.url;
+  let idUrl = url.split("/").pop();
   let status;
   let message;
 
@@ -83,7 +84,6 @@ const server = createServer(async (req, res) => {
     }
     res.setHeader("Content-Type", "application/json");
   } else if (url.startsWith("/bookmarks/")) {
-    let idUrl = url.split("/").pop();
     if (req.method === "GET") {
       try {
         const data = await fs.readFile(filePath("data/bookmarks.json"), {
@@ -94,6 +94,30 @@ const server = createServer(async (req, res) => {
         if (isValidId) {
           status = 200;
           message = isValidId;
+        } else {
+          status = 404;
+          message = [{ error: "Bookmark not found" }];
+        }
+      } catch {
+        status = 400;
+        message = [{ error: "Failed to read bookmarks" }];
+      }
+      message = JSON.stringify(message);
+    } else if (req.method === "DELETE") {
+      try {
+        const data = await fs.readFile(filePath("data/bookmarks.json"), {
+          encoding: "utf8",
+        });
+        message = JSON.parse(data);
+        const isValidId = message.find(({ id }) => id === idUrl);
+        if (isValidId) {
+          status = 200;
+          message = message.filter((bookmark) => bookmark.id !== isValidId.id);
+          message = await fs.writeFile(
+            filePath("data/bookmarks.json"),
+            JSON.stringify(message, null, 2),
+            "utf8",
+          );
         } else {
           status = 404;
           message = [{ error: "Bookmark not found" }];
