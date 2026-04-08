@@ -1,22 +1,17 @@
 import { postBookmark } from "./api.js";
 
 const dialog = document.getElementById("add-new-dialog");
+const editBookmarkTitle = document.getElementById("edit-title");
+const editBookmarkUrl = document.getElementById("edit-url");
 const main = document.querySelector("main");
 const newBookmarkForm = document.getElementById("add-new-form");
 const popover = document.getElementById("submit-popover");
 
-main.addEventListener("click", (event) => {
-  let clickTarget = event.target;
-
-  const isClickMatch = clickTarget.matches("button.modify");
-
-  if (isClickMatch) {
-    const clickParent = clickTarget.closest("article");
-    const clickId = clickParent.getAttribute("data-id");
-
-    console.log(fetch(`/bookmarks/${clickId}`));
-  }
-});
+async function fetchBookmark(id) {
+  const response = await fetch(`/bookmarks/${id}`);
+  const data = await response.json();
+  return data;
+}
 
 async function getBookmarks() {
   const bookmarksUrl = "/bookmarks";
@@ -41,7 +36,7 @@ async function getBookmarks() {
             day: "2-digit",
           })}</p>
         </div>
-        <button class="modify" aria-label="bookmark options">...</button>
+        <button class="modify" command="show-modal" commandfor="edit-dialog" aria-label="bookmark options">...</button>
         </article>
     `,
       )
@@ -75,3 +70,17 @@ async function submitNewBookmark(event) {
 getBookmarks();
 
 newBookmarkForm.addEventListener("submit", submitNewBookmark);
+
+main.addEventListener("click", async (event) => {
+  let clickTarget = event.target;
+  const isClickMatch = clickTarget.matches("button.modify");
+  if (isClickMatch) {
+    const clickParent = clickTarget.closest("article");
+    const clickId = clickParent.getAttribute("data-id");
+
+    const data = await fetchBookmark(clickId);
+
+    editBookmarkTitle.value = data.title;
+    editBookmarkUrl.value = data.url;
+  }
+});

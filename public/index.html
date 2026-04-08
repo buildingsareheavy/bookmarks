@@ -11,8 +11,8 @@
     <button id="add-new" command="show-modal" commandfor="add-new-dialog">
       Add New
     </button>
-    <dialog id="add-new-dialog">
-      <h2 id="dialog-title">Add New Bookmark</h2>
+    <dialog id="add-new-dialog" aria-labelledby="dialog-new-title">
+      <h2 id="dialog-new-title">Add New Bookmark</h2>
       <form id="add-new-form">
         <label for="add-title">Title</label>
         <input type="text" id="add-title" name="title" required />
@@ -28,6 +28,25 @@
         <button id="add-new-submit">Submit</button>
       </form>
       <button commandfor="add-new-dialog" command="close">Close</button>
+    </dialog>
+    <dialog id="edit-dialog" aria-labelledby="dialog-edit-title">
+      <h2 id="dialog-edit-title">Edit/Delete Bookmark</h2>
+      <button id="dialog-delete">Delete Bookmark</button>
+      <form id="edit-form">
+        <label for="edit-title">Edit Title</label>
+        <input type="text" id="edit-title" name="title" required disabled />
+        <label for="edit-url">Edit URL</label>
+        <input
+          type="url"
+          id="edit-url"
+          name="url"
+          pattern="https://.*/"
+          required
+          disabled
+        />
+        <button id="edit-submit">Save</button>
+      </form>
+      <button commandfor="edit-dialog" command="close">Close</button>
     </dialog>
     <div class="filter-container">
       Filter:
