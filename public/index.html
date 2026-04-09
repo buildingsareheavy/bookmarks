@@ -1,66 +1,64 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bookmarks</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <h1>Bookmarks</h1>
-    <button id="add-new" command="show-modal" commandfor="add-new-dialog">
-      Add New
-    </button>
-    <dialog id="add-new-dialog" aria-labelledby="dialog-new-title">
-      <h2 id="dialog-new-title">Add New Bookmark</h2>
-      <form id="add-new-form">
-        <label for="add-title">Title</label>
-        <input type="text" id="add-title" name="title" required />
-        <label for="add-url">URL</label>
-        <input
-          type="url"
-          id="add-url"
-          name="url"
-          pattern="https://.*/"
-          required
-        />
-        <!-- combobox for tags later -->
-        <button id="add-new-submit">Submit</button>
-      </form>
-      <button commandfor="add-new-dialog" command="close">Close</button>
-    </dialog>
-    <dialog id="edit-dialog" aria-labelledby="dialog-edit-title">
-      <h2 id="dialog-edit-title">Edit/Delete Bookmark</h2>
-      <button id="dialog-delete">Delete Bookmark</button>
-      <form id="edit-form">
-        <label for="edit-title">Edit Title</label>
-        <input type="text" id="edit-title" name="title" required disabled />
-        <label for="edit-url">Edit URL</label>
-        <input
-          type="url"
-          id="edit-url"
-          name="url"
-          pattern="https://.*/"
-          required
-          disabled
-        />
-        <button id="edit-submit" disabled>Save</button>
-      </form>
-      <button commandfor="edit-dialog" command="close">Close</button>
-    </dialog>
-    <div class="filter-container">
-      Filter:
-      <select name="tags" id="tag-filter">
-        <option value="all">all</option>
-        <option value="art">art</option>
-        <option value="coding">coding</option>
-        <option value="news">news</option>
-        <option value="reference">reference</option>
-      </select>
-    </div>
-    <h2>List of Bookmarks</h2>
-    <main></main>
-    <div id="submit-popover" popover></div>
-    <script type="module" src="js/main.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bookmarks</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <h1>Bookmarks</h1>
+  <button id="add-new" command="show-modal" commandfor="add-new-dialog">
+    Add New
+  </button>
+  <dialog id="add-new-dialog" aria-labelledby="dialog-new-title">
+    <h2 id="dialog-new-title">Add New Bookmark</h2>
+    <form id="add-new-form">
+      <label for="add-title">Title</label>
+      <input type="text" id="add-title" name="title" required />
+      <label for="add-url">URL</label>
+      <input type="url" id="add-url" name="url" pattern="https://.*/" required />
+      <!-- combobox for tags later -->
+      <button id="add-new-submit">Submit</button>
+    </form>
+    <button commandfor="add-new-dialog" command="close">Close</button>
+  </dialog>
+  <dialog id="edit-dialog" aria-labelledby="dialog-edit-title">
+    <h2 id="dialog-edit-title">Edit/Delete Bookmark</h2>
+    <button id="dialog-delete" command="show-modal" commandfor="confirm-deletion-dialog">Delete Bookmark</button>
+    <form id="edit-form">
+      <label for="edit-title">Edit Title</label>
+      <input type="text" id="edit-title" name="title" required disabled />
+      <label for="edit-url">Edit URL</label>
+      <input type="url" id="edit-url" name="url" pattern="https://.*/" required disabled />
+      <button id="edit-submit" disabled>Save</button>
+    </form>
+    <button commandfor="edit-dialog" command="close">Close</button>
+  </dialog>
+
+  <dialog id="confirm-deletion-dialog" aria-labelledby="dialog-confirm-deletion-title">
+    <h2 id="dialog-confirm-deletion-title">Are you sure you want to delete this bookmark?</h2>
+    <button id="confirm-delete-yes">delete</button>
+    <button id="confirm-delete-no" commandfor="confirm-deletion-dialog" command="close">cancel</button>
+
+  </dialog>
+
+  <div class="filter-container">
+    Filter:
+    <select name="tags" id="tag-filter">
+      <option value="all">all</option>
+      <option value="art">art</option>
+      <option value="coding">coding</option>
+      <option value="news">news</option>
+      <option value="reference">reference</option>
+    </select>
+  </div>
+  <h2>List of Bookmarks</h2>
+  <main></main>
+  <div id="submit-popover" popover></div>
+  <script type="module" src="js/main.js"></script>
+</body>
+
 </html>

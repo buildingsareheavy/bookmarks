@@ -28,7 +28,7 @@ const pushToJSONFile = async function (destination, newBookmark) {
 
     data.push(newBookmark);
     await fs.writeFile(destination, JSON.stringify(data, null, 2), "utf8");
-    console.log("Object added successfully");
+    // console.log("Object added successfully");
   } catch (error) {
     console.error("Error", error);
   }
