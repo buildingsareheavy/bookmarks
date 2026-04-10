@@ -1,7 +1,8 @@
 import { createServer } from "node:http";
 import fs from "node:fs/promises";
-import { fileURLToPath } from "node:url";
-import { extname, dirname, join } from "node:path";
+import { extname, join } from "node:path";
+import { getBookmarks } from "./handlers/bookmark.js";
+import { filePath, pushToJSONFile } from "./utils/files.js";
 
 const hostname = "localhost";
 const port = 3000;
@@ -17,23 +18,6 @@ const contentType = {
   ".ico": "image/x-icon",
 };
 
-const filePath = (fileName) =>
-  join(dirname(fileURLToPath(import.meta.url)), "../" + fileName);
-
-const pushToJSONFile = async function (destination, newBookmark) {
-  try {
-    let fileContents = await fs.readFile(destination, "utf8");
-
-    let data = JSON.parse(fileContents);
-
-    data.push(newBookmark);
-    await fs.writeFile(destination, JSON.stringify(data, null, 2), "utf8");
-    // console.log("Object added successfully");
-  } catch (error) {
-    console.error("Error", error);
-  }
-};
-
 const server = createServer(async (req, res) => {
   let url = req.url;
   let idUrl = url.split("/").pop();
@@ -44,17 +28,8 @@ const server = createServer(async (req, res) => {
 
   if (url === "/bookmarks") {
     if (req.method === "GET") {
-      try {
-        status = 200;
-        const data = await fs.readFile(filePath("data/bookmarks.json"), {
-          encoding: "utf8",
-        });
-        message = JSON.parse(data);
-      } catch {
-        status = 400;
-        message = [{ error: "Failed to read bookmarks" }];
-      }
-      message = JSON.stringify(message);
+      await getBookmarks(res);
+      return;
     } else if (req.method === "POST") {
       let body = "";
       for await (const chunk of req) {
