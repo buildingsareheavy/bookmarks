@@ -6,9 +6,9 @@ const editBookmarkTitle = document.getElementById("edit-title");
 const editBookmarkUrl = document.getElementById("edit-url");
 const main = document.querySelector("main");
 const newBookmarkForm = document.getElementById("add-new-form");
-const deleteBookmarkButton = document.getElementById("dialog-delete");
 const confirmDialog = document.getElementById("confirm-deletion-dialog");
-const confirmDeleteBookmarkButton = document.getElementById("confirm-delete-yes");
+const confirmDeleteBookmarkButton =
+  document.getElementById("confirm-delete-yes");
 const popover = document.getElementById("submit-popover");
 
 async function fetchBookmark(id) {
@@ -33,12 +33,12 @@ async function getBookmarks() {
     <div aria-label="meta information" class="meta-info">
           <p aria-label="tags">${bookmark.tags && bookmark.tags.map((tag) => `<span> ${tag} </span>`).join("")} </p>
           <p aria-label="created date">${new Date(
-          bookmark.createdAt,
-        ).toLocaleString("en-GB", {
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
-        })}</p>
+            bookmark.createdAt,
+          ).toLocaleString("en-GB", {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+          })}</p>
         </div>
         <button class="modify" command="show-modal" commandfor="edit-dialog" aria-label="bookmark options">...</button>
         </article>
@@ -94,17 +94,9 @@ main.addEventListener("click", async (event) => {
 async function isDeleted() {
   const result = await deleteBookmark(clickId);
   if (result) {
-    /*
-    add another confirmation dialog
-    dialog#confirm-deletion-dialog
-    p (are you sure you want to delete this bookmark?)
-    button#confirm-delete-yes (delete)
-    button#confirm-delete-no (cancel)
-    */
     getBookmarks();
     confirmDialog.close();
     editDialog.close();
-
   } else {
     console.error("Error: ", result);
   }

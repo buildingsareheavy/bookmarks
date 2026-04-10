@@ -26,12 +26,5 @@
       "news"
     ],
     "createdAt": "2026-03-02T11:10:00Z"
-  },
-  {
-    "title": "test",
-    "url": "https://test.com/",
-    "id": "290341a1-087f-4dd4-a2f9-6de27de3def2",
-    "createdAt": "2026-04-09T06:46:22.876Z",
-    "tags": []
   }
 ]

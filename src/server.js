@@ -18,7 +18,7 @@ const contentType = {
 };
 
 const filePath = (fileName) =>
-  join(dirname(fileURLToPath(import.meta.url)), fileName);
+  join(dirname(fileURLToPath(import.meta.url)), "../" + fileName);
 
 const pushToJSONFile = async function (destination, newBookmark) {
   try {
@@ -113,7 +113,7 @@ const server = createServer(async (req, res) => {
         if (isValidId) {
           status = 200;
           message = message.filter((bookmark) => bookmark.id !== isValidId.id);
-          message = await fs.writeFile(
+          await fs.writeFile(
             filePath("data/bookmarks.json"),
             JSON.stringify(message, null, 2),
             "utf8",
@@ -131,7 +131,7 @@ const server = createServer(async (req, res) => {
   } else {
     try {
       status = 200;
-      let pathName = join("public", url);
+      let pathName = join("./public", url);
       if (url === "/") {
         pathName = "public/index.html";
       }
