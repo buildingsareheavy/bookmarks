@@ -1,4 +1,4 @@
-import { postBookmark, deleteBookmark } from "./api.js";
+import { fetchBookmark, getBookmarks, postBookmark, deleteBookmark } from "./api.js";
 
 const dialog = document.getElementById("add-new-dialog");
 const editDialog = document.getElementById("edit-dialog");
@@ -10,44 +10,35 @@ const confirmDialog = document.getElementById("confirm-deletion-dialog");
 const confirmDeleteBookmarkButton =
   document.getElementById("confirm-delete-yes");
 const popover = document.getElementById("submit-popover");
+let clickId;
 
-async function fetchBookmark(id) {
-  const response = await fetch(`/bookmarks/${id}`);
-  const data = await response.json();
-  return data;
-}
 
-async function getBookmarks() {
-  const bookmarksUrl = "/bookmarks";
-  try {
-    const response = await fetch(bookmarksUrl);
-    if (!response.ok) {
-      throw new Error("Response status: " + response.status);
-    }
-    const result = await response.json();
-    main.innerHTML = result
-      .map(
-        (bookmark) => `
+function renderBookmarks(bookmarks) {
+  main.innerHTML = bookmarks
+    .map(
+      (bookmark) => `
         <article data-id="${bookmark.id}">
     <h3><a href="${bookmark.url}">${bookmark.title}</a></h3>
     <div aria-label="meta information" class="meta-info">
           <p aria-label="tags">${bookmark.tags && bookmark.tags.map((tag) => `<span> ${tag} </span>`).join("")} </p>
           <p aria-label="created date">${new Date(
-          bookmark.createdAt,
-        ).toLocaleString("en-GB", {
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
-        })}</p>
+        bookmark.createdAt,
+      ).toLocaleString("en-GB", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+      })}</p>
         </div>
         <button class="modify" command="show-modal" commandfor="edit-dialog" aria-label="bookmark options">...</button>
         </article>
     `,
-      )
-      .join("");
-  } catch (error) {
-    console.error(error.message);
-  }
+    )
+    .join("");
+}
+
+async function refreshBookmarks() {
+  const bookmarks = await getBookmarks();
+  renderBookmarks(bookmarks);
 }
 
 async function submitNewBookmark(event) {
@@ -61,7 +52,7 @@ async function submitNewBookmark(event) {
   popover.setAttribute("data-success", result);
 
   if (result) {
-    getBookmarks();
+    refreshBookmarks();
     popover.textContent = "new bookmark added!";
   } else {
     popover.textContent = "something went wrong!";
@@ -71,11 +62,22 @@ async function submitNewBookmark(event) {
   form.reset();
 }
 
-getBookmarks();
+async function isDeleted() {
+  const result = await deleteBookmark(clickId);
+  if (result) {
+    refreshBookmarks();
+    confirmDialog.close();
+    editDialog.close();
+  } else {
+    console.error("Error: ", result);
+  }
+}
+
+refreshBookmarks();
 
 newBookmarkForm.addEventListener("submit", submitNewBookmark);
 
-let clickId = null;
+confirmDeleteBookmarkButton.addEventListener("click", isDeleted);
 
 main.addEventListener("click", async (event) => {
   let clickTarget = event.target;
@@ -90,16 +92,3 @@ main.addEventListener("click", async (event) => {
     editBookmarkUrl.value = data.url;
   }
 });
-
-async function isDeleted() {
-  const result = await deleteBookmark(clickId);
-  if (result) {
-    getBookmarks();
-    confirmDialog.close();
-    editDialog.close();
-  } else {
-    console.error("Error: ", result);
-  }
-}
-
-confirmDeleteBookmarkButton.addEventListener("click", isDeleted);

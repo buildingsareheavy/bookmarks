@@ -1,7 +1,27 @@
-export { postBookmark, deleteBookmark };
-
+export { fetchBookmark, getBookmarks, postBookmark, deleteBookmark };
 
 // all fetch calls live here
+async function fetchBookmark(id) {
+  const response = await fetch(`/bookmarks/${id}`);
+  const data = await response.json();
+  return data;
+}
+
+async function getBookmarks() {
+  const bookmarksUrl = "/bookmarks";
+  try {
+    const response = await fetch(bookmarksUrl);
+    if (!response.ok) {
+      throw new Error("Response status: " + response.status);
+    }
+    const result = await response.json();
+    return result.reverse(); // newest bookmarks on top;
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+// all fetch calls that use apiHelper() live here
 async function postBookmark(data) {
   return apiHelper(undefined, "POST", data);
 }
