@@ -33,12 +33,12 @@ async function getBookmarks() {
     <div aria-label="meta information" class="meta-info">
           <p aria-label="tags">${bookmark.tags && bookmark.tags.map((tag) => `<span> ${tag} </span>`).join("")} </p>
           <p aria-label="created date">${new Date(
-            bookmark.createdAt,
-          ).toLocaleString("en-GB", {
-            year: "numeric",
-            month: "short",
-            day: "2-digit",
-          })}</p>
+          bookmark.createdAt,
+        ).toLocaleString("en-GB", {
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+        })}</p>
         </div>
         <button class="modify" command="show-modal" commandfor="edit-dialog" aria-label="bookmark options">...</button>
         </article>
