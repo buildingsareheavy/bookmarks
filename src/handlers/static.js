@@ -3,7 +3,7 @@ import { filePath } from "../utils/files.js";
 import fs from "node:fs/promises";
 import { sendError } from "../utils/response.js";
 
-export { staticFiles };
+export { serveStaticFiles };
 
 const contentType = {
   ".html": "text/html",
@@ -16,7 +16,7 @@ const contentType = {
   ".ico": "image/x-icon",
 };
 
-async function staticFiles(res, url) {
+async function serveStaticFiles(res, url) {
   const fileType = url === "/" ? ".html" : extname(url);
   try {
     let pathName = join("./public", url);
@@ -35,6 +35,5 @@ async function staticFiles(res, url) {
     res.end(data);
   } catch {
     sendError(res, 404, "Not found");
-    //   data = JSON.stringify(data);
   }
 }

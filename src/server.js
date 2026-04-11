@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { staticFiles } from "./handlers/static.js";
+import { serveStaticFiles } from "./handlers/static.js";
 import {
   getBookmarks,
   postBookmark,
@@ -27,7 +27,7 @@ const server = createServer(async (req, res) => {
       await deleteBookmarkById(res, idUrl);
     }
   } else {
-    staticFiles(res, url);
+    await serveStaticFiles(res, url);
   }
 });
 
