@@ -1,5 +1,6 @@
 import { readBookmarks, writeBookmarks } from "../utils/files.js";
 import { sendJSON, sendError } from "../utils/response.js";
+import { Bookmark } from "../utils/bookmark.js";
 
 export { getBookmarks, postBookmark, getBookmarkById, deleteBookmarkById };
 
@@ -23,11 +24,9 @@ async function postBookmark(res, req) {
 
   try {
     let data = JSON.parse(body);
-    let date = new Date();
-    data["id"] = crypto.randomUUID();
-    data["createdAt"] = date.toISOString();
-    data["tags"] = [];
-    // console.log("postBookmark()", data);
+    // console.log("postBookmark() data ", data);
+    data = new Bookmark(data.title, data.url);
+    // console.log("postBookmark() data after Bookmark Class ", data);
     const allBookmarks = await readBookmarks();
     allBookmarks.push(data);
     await writeBookmarks(allBookmarks);
