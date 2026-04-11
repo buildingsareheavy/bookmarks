@@ -1,132 +1,34 @@
 import { createServer } from "node:http";
-import fs from "node:fs/promises";
-import { extname, join } from "node:path";
-import { getBookmarks } from "./handlers/bookmark.js";
-import { filePath, pushToJSONFile } from "./utils/files.js";
+import { staticFiles } from "./handlers/static.js";
+import {
+  getBookmarks,
+  postBookmark,
+  getBookmarkById,
+  deleteBookmarkById,
+} from "./handlers/bookmark.js";
 
 const hostname = "localhost";
 const port = 3000;
 
-const contentType = {
-  ".html": "text/html",
-  ".css": "text/css",
-  ".js": "application/javascript",
-  ".json": "application/json",
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".svg": "image/svg+xml",
-  ".ico": "image/x-icon",
-};
-
 const server = createServer(async (req, res) => {
   let url = req.url;
   let idUrl = url.split("/").pop();
-  let status;
-  let message;
-
-  const fileType = url === "/" ? ".html" : extname(url);
 
   if (url === "/bookmarks") {
     if (req.method === "GET") {
       await getBookmarks(res);
-      return;
     } else if (req.method === "POST") {
-      let body = "";
-      for await (const chunk of req) {
-        body += chunk.toString();
-      }
-
-      try {
-        let message = JSON.parse(body);
-        let date = new Date();
-        message["id"] = crypto.randomUUID();
-        message["createdAt"] = date.toISOString();
-        message["tags"] = [];
-        // console.log("Recieved POST data", message);
-
-        await pushToJSONFile(filePath("data/bookmarks.json"), message);
-
-        status = 200;
-        message = JSON.stringify({
-          message: "Data recieved!",
-          received: message,
-        });
-      } catch {
-        status = 400;
-        message = [{ error: "Not found" }];
-        message = JSON.stringify(message);
-      }
+      await postBookmark(res, req);
     }
-    res.setHeader("Content-Type", "application/json");
   } else if (url.startsWith("/bookmarks/")) {
     if (req.method === "GET") {
-      try {
-        const data = await fs.readFile(filePath("data/bookmarks.json"), {
-          encoding: "utf8",
-        });
-        message = JSON.parse(data);
-        const isValidId = message.find(({ id }) => id === idUrl);
-        if (isValidId) {
-          status = 200;
-          message = isValidId;
-        } else {
-          status = 404;
-          message = [{ error: "Bookmark not found" }];
-        }
-      } catch {
-        status = 400;
-        message = [{ error: "Failed to read bookmarks" }];
-      }
-      message = JSON.stringify(message);
+      await getBookmarkById(res, idUrl);
     } else if (req.method === "DELETE") {
-      try {
-        const data = await fs.readFile(filePath("data/bookmarks.json"), {
-          encoding: "utf8",
-        });
-        message = JSON.parse(data);
-        const isValidId = message.find(({ id }) => id === idUrl);
-        if (isValidId) {
-          status = 200;
-          message = message.filter((bookmark) => bookmark.id !== isValidId.id);
-          await fs.writeFile(
-            filePath("data/bookmarks.json"),
-            JSON.stringify(message, null, 2),
-            "utf8",
-          );
-        } else {
-          status = 404;
-          message = [{ error: "Bookmark not found" }];
-        }
-      } catch {
-        status = 400;
-        message = [{ error: "Failed to read bookmarks" }];
-      }
-      message = JSON.stringify(message);
+      await deleteBookmarkById(res, idUrl);
     }
   } else {
-    try {
-      status = 200;
-      let pathName = join("./public", url);
-      if (url === "/") {
-        pathName = "public/index.html";
-      }
-      const data = await fs.readFile(filePath(pathName), {
-        encoding: "utf-8",
-      });
-
-      res.setHeader(
-        "Content-Type",
-        contentType[fileType] || "application/octet-stream",
-      );
-      message = data;
-    } catch {
-      status = 404;
-      message = [{ error: "Not found" }];
-      message = JSON.stringify(message);
-    }
+    staticFiles(res, url);
   }
-  res.statusCode = status;
-  res.end(message);
 });
 
 server.listen(port, hostname, () => {
